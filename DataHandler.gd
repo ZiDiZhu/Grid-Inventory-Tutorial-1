@@ -16,7 +16,7 @@ func load_data(path : String) -> void:
 	var item_data_file = FileAccess.open(path, FileAccess.READ)
 	item_data = JSON.parse_string(item_data_file.get_as_text())
 	item_data_file.close()
-	#print(item_data)	#check value
+	print(item_data)	#check value
 	
 #process the json and put the grid information into accessable array format for iterating
 func set_grid_data() -> void:
@@ -25,5 +25,5 @@ func set_grid_data() -> void:
 		for point in item_data[item]["Grid"].split("/"):
 			temp_grid_array.push_back(point.split(","))
 		item_grid_data[item] = temp_grid_array
-	#print(item_grid_data)	#check values
+	print(item_grid_data)	#check values
 	
