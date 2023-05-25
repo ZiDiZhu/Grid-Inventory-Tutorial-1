@@ -14,7 +14,7 @@ var can_place := false
 var icon_anchor : Vector2
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	for i in range(14):
+	for i in range(49):
 		create_slot()
 	
 	
@@ -33,7 +33,7 @@ func _process(delta):
 			if scroll_container.get_global_rect().has_point(get_global_mouse_position()):
 				pick_item()
 	
-	
+# add a slot to the grid inventory
 func create_slot():
 	var new_slot = slot_scene.instantiate()
 	new_slot.slot_ID = grid_array.size()
@@ -41,8 +41,15 @@ func create_slot():
 	grid_array.push_back(new_slot)
 	new_slot.slot_entered.connect(_on_slot_mouse_entered)
 	new_slot.slot_exited.connect(_on_slot_mouse_exited)
+	if(new_slot.slot_ID %7 ==0):
+		new_slot.state=new_slot.States.NULL;
+		new_slot.filter.color = Color.BLACK;
 	pass
 
+# parts of a grid container that can't be used
+func slot_is_null() -> bool:
+	return false;
+	
 
 func _on_slot_mouse_entered(a_Slot):
 	icon_anchor = Vector2(10000,100000)
@@ -57,7 +64,7 @@ func _on_slot_mouse_exited(a_Slot):
 	if not grid_container.get_global_rect().has_point(get_global_mouse_position()):
 		current_slot = null
 
-func _on_button_spawn_pressed():
+func _on_button_spawn_pressed(): #get new vegetable
 	var new_item = item_scene.instantiate()
 	add_child(new_item)
 	new_item.load_item(randi_range(1,10))    #randomize this for different items to spawn
@@ -69,6 +76,13 @@ func check_slot_availability(a_Slot):
 	for grid in item_held.item_grids:
 		var grid_to_check = a_Slot.slot_ID + grid[0] + grid[1] * col_count
 		var line_switch_check = a_Slot.slot_ID % col_count + grid[0]
+		#print("checking grid"+str(grid_to_check));
+		if grid_to_check >= grid_array.size():
+			can_place = false
+			return
+		if grid_array[grid_to_check].state == grid_array[grid_to_check].States.NULL:
+			can_place = false
+			return
 		if line_switch_check < 0 or line_switch_check >= col_count:
 			can_place = false
 			return
@@ -78,7 +92,6 @@ func check_slot_availability(a_Slot):
 		if grid_array[grid_to_check].state == grid_array[grid_to_check].States.TAKEN:
 			can_place = false
 			return
-		
 	can_place = true
 	
 func set_grids(a_Slot):
@@ -103,6 +116,8 @@ func set_grids(a_Slot):
 func clear_grid():
 	for grid in grid_array:
 		grid.set_color(grid.States.DEFAULT)
+		if grid.state == grid.States.NULL:
+			grid.filter.color = Color.BLACK;
 
 func rotate_item():
 	item_held.rotate_item()
@@ -154,6 +169,6 @@ func pick_item():
 	
 	
 
-
+#when pressing button to create slot
 func _on_add_slot_pressed():
 	create_slot()

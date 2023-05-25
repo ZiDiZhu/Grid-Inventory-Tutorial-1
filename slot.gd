@@ -7,7 +7,7 @@ signal slot_exited(slot)
 
 var slot_ID
 var is_hovering:=false
-enum States {DEFAULT, TAKEN, FREE}
+enum States {DEFAULT, TAKEN, FREE, NULL}
 var state = States.DEFAULT
 var item_stored = null
 
@@ -27,7 +27,7 @@ func set_color(a_state = States.DEFAULT) -> void :
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if get_global_rect().has_point(get_global_mouse_position()):
+	if get_global_rect().has_point(get_global_mouse_position())&& state!=States.NULL:
 		if not is_hovering:
 			is_hovering = true
 			emit_signal("slot_entered",self)
